@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [username, setUsername] = useState<string | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
 
   useEffect(() => {
     const token = getStoredSessionToken();
@@ -211,7 +212,8 @@ export default function DashboardPage() {
                 ? posts.map((post) => (
                     <article
                       key={post.id}
-                      className="rounded-2xl border border-black/[.06] bg-zinc-50 p-4 transition hover:-translate-y-0.5 hover:shadow-sm dark:border-white/[.12] dark:bg-zinc-900"
+                      onClick={() => setSelectedPost(post)}
+                      className="cursor-pointer rounded-2xl border border-black/[.06] bg-zinc-50 p-4 transition hover:-translate-y-0.5 hover:shadow-sm dark:border-white/[.12] dark:bg-zinc-900"
                     >
                       <h3 className="text-base font-semibold sm:text-lg">{post.title}</h3>
                       <p className="mt-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
@@ -237,6 +239,53 @@ export default function DashboardPage() {
           </article>
         </section>
       </main>
+
+      {selectedPost && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-opacity xl:p-8"
+          onClick={() => setSelectedPost(null)}
+        >
+          <div 
+            className={`flex w-full overflow-hidden rounded-3xl border border-black/[.08] bg-white p-6 sm:p-8 shadow-xl dark:border-white/[.145] dark:bg-zinc-950 max-h-[90vh] gap-6 md:gap-8 ${selectedPost.image_url ? 'max-w-5xl flex-col md:flex-row' : 'max-w-2xl flex-col'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={`flex flex-col pr-2 overflow-y-auto ${selectedPost.image_url ? 'md:w-1/2' : 'w-full'}`}>
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                  {selectedPost.category}
+                </span>
+                <button 
+                  onClick={() => setSelectedPost(null)}
+                  className="rounded-full p-2 text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+              </div>
+              <h3 className="text-2xl font-bold text-foreground sm:text-3xl">
+                {selectedPost.title}
+              </h3>
+              <div className="mt-6 flex-1">
+                <p className="whitespace-pre-wrap text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
+                  {selectedPost.content}
+                </p>
+              </div>
+              <div className="mt-8 border-t border-black/[.08] pt-6 text-sm text-zinc-500 dark:border-white/[.145] dark:text-zinc-500">
+                @{selectedPost.username} · {new Date(selectedPost.created_at).toLocaleString()}
+              </div>
+            </div>
+
+            {selectedPost.image_url && (
+              <div className="relative min-h-[300px] flex items-center justify-center overflow-hidden rounded-2xl border border-black/[.04] bg-zinc-50 dark:border-white/[.08] dark:bg-zinc-900/50 p-4 md:w-1/2">
+                <img
+                  src={selectedPost.image_url}
+                  alt={selectedPost.title}
+                  className="max-h-full max-w-full object-contain rounded-xl"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {isLogoutModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-opacity">

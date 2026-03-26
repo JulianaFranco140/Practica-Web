@@ -2,6 +2,7 @@ import { supabase } from "./supabase";
 
 const SESSION_KEY = "blog_session_token";
 const USER_ID_KEY = "blog_user_id";
+const USERNAME_KEY = "blog_username";
 
 type RegisterResult = {
   ok: boolean;
@@ -59,6 +60,7 @@ export async function loginWithUsername(username: string, password: string) {
   if (result.user_id) {
     localStorage.setItem(USER_ID_KEY, result.user_id);
   }
+  localStorage.setItem(USERNAME_KEY, trimmed);
 
   return { ok: true, userId: result.user_id };
 }
@@ -72,6 +74,7 @@ export async function logoutCustomSession() {
 
   localStorage.removeItem(SESSION_KEY);
   localStorage.removeItem(USER_ID_KEY);
+  localStorage.removeItem(USERNAME_KEY);
 }
 
 export function getStoredSessionToken() {
@@ -80,4 +83,8 @@ export function getStoredSessionToken() {
 
 export function getStoredUserId() {
   return localStorage.getItem(USER_ID_KEY);
+}
+
+export function getStoredUsername() {
+  return localStorage.getItem(USERNAME_KEY);
 }

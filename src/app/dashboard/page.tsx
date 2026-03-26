@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getStoredSessionToken, logoutCustomSession } from "@/lib/auth";
+import { getStoredSessionToken, getStoredUsername, logoutCustomSession } from "@/lib/auth";
 import { createPost, listPosts, PostItem } from "@/lib/posts";
 
 export default function DashboardPage() {
@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [saving, setSaving] = useState(false);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [posts, setPosts] = useState<PostItem[]>([]);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const token = getStoredSessionToken();
@@ -25,6 +26,7 @@ export default function DashboardPage() {
       return;
     }
 
+    setUsername(getStoredUsername());
     void loadPosts();
   }, [router]);
 
@@ -92,7 +94,7 @@ export default function DashboardPage() {
               Dashboard
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              Bienvenida a tu espacio de publicaciones
+              {username ? `Bienvenido(a), ${username}` : "Bienvenida a tu espacio de publicaciones"}
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400 sm:text-base">
               Aqui puedes crear nuevas publicaciones y revisar las ideas que ya

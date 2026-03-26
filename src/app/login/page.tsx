@@ -1,17 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthCard } from "@/components/AuthCard";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/TextField";
+import { loginWithUsername } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError(null);
+
+    if (username.trim().length < 3) {
+      setError("El nombre debe tener al menos 3 caracteres.");
+      return;
+    }
+
+    setLoading(true);
+
+    const result = await loginWithUsername(username, password);
+
+    if (!result.ok) {
+      setError(result.message ?? "Credenciales invalidas");
+      setLoading(false);
+      return;
+    }
+
     router.push("/dashboard");
   };
 
@@ -26,18 +48,25 @@ export default function LoginPage() {
         </Link>
         <AuthCard
           title="Iniciar sesión"
-          description="Accede para publicar y gestionar tus ideas."
+          description="Ingresa con nombre de usuario y contraseña."
           footerText="¿No tienes cuenta?"
           footerLinkText="Regístrate"
           footerHref="/register"
         >
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            {error ? (
+              <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/25 dark:text-red-300">
+                {error}
+              </p>
+            ) : null}
             <TextField
-              label="Correo electrónico"
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="tu@email.com"
+              label="Nombre de usuario"
+              name="username"
+              autoComplete="username"
+              placeholder="tu_usuario"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={loading}
               required
             />
             <TextField
@@ -46,10 +75,13 @@ export default function LoginPage() {
               type="password"
               autoComplete="current-password"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
               required
             />
-            <Button type="submit" className="mt-2 w-full">
-              Entrar
+            <Button type="submit" className="mt-2 w-full" disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </AuthCard>

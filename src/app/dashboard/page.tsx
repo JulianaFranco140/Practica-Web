@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getStoredSessionToken, logoutCustomSession } from "@/lib/auth";
 
 const demoPosts = [
   {
@@ -28,6 +33,21 @@ const demoPosts = [
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = getStoredSessionToken();
+
+    if (!token) {
+      router.replace("/login");
+    }
+  }, [router]);
+
+  const handleLogout = async () => {
+    await logoutCustomSession();
+    router.replace("/login");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 via-zinc-100 to-zinc-200 px-4 py-10 text-foreground dark:from-zinc-950 dark:via-zinc-900 dark:to-black sm:px-6 lg:px-8">
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-8">
@@ -52,12 +72,13 @@ export default function DashboardPage() {
             >
               Ir al inicio
             </Link>
-            <Link
-              href="/login"
+            <button
+              type="button"
+              onClick={handleLogout}
               className="inline-flex h-11 items-center justify-center rounded-full bg-foreground px-5 text-sm font-medium text-background transition-colors hover:bg-foreground/85"
             >
               Cerrar sesion
-            </Link>
+            </button>
           </div>
         </header>
 

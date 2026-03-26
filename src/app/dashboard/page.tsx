@@ -66,12 +66,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex gap-3">
-            <Link
-              href="/"
-              className="inline-flex h-11 items-center justify-center rounded-full border border-black/[.08] px-5 text-sm font-medium transition-colors hover:bg-foreground/5 dark:border-white/[.145] dark:hover:bg-white/10"
-            >
-              Ir al inicio
-            </Link>
+            
             <button
               type="button"
               onClick={handleLogout}

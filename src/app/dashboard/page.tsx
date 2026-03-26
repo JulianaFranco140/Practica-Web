@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [username, setUsername] = useState<string | null>(null);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   useEffect(() => {
     const token = getStoredSessionToken();
@@ -106,7 +107,7 @@ export default function DashboardPage() {
             
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={() => setIsLogoutModalOpen(true)}
               className="inline-flex h-11 items-center justify-center rounded-full bg-foreground px-5 text-sm font-medium text-background transition-colors hover:bg-foreground/85"
             >
               Cerrar sesion
@@ -236,6 +237,33 @@ export default function DashboardPage() {
           </article>
         </section>
       </main>
+
+      {isLogoutModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-opacity">
+          <div className="w-full max-w-sm rounded-3xl border border-black/[.08] bg-white p-6 shadow-xl dark:border-white/[.145] dark:bg-black">
+            <h3 className="text-xl font-semibold text-foreground">¿Cerrar sesión?</h3>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+              ¿Estás seguro de que deseas salir de la aplicación?
+            </p>
+            <div className="mt-8 flex w-full flex-col gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setIsLogoutModalOpen(false)}
+                className="inline-flex h-10 w-full items-center justify-center rounded-full border border-black/[.08] bg-transparent px-4 text-sm font-medium transition-colors hover:bg-zinc-100 dark:border-white/[.145] dark:hover:bg-white/5 sm:w-auto"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="inline-flex h-10 w-full items-center justify-center rounded-full bg-red-600 px-4 text-sm font-medium text-white transition-colors hover:bg-red-700 sm:w-auto"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

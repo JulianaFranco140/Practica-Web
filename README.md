@@ -1,7 +1,7 @@
 ## Integrantes:
 - Juliana Franco Alzate
 - Emanuel Orozco Gallego
-- Cindy Paola
+
 
 # Blog Web
 

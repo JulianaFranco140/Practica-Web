@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getStoredSessionToken, getStoredUsername, logoutCustomSession } from "@/lib/auth";
@@ -16,23 +15,17 @@ export default function DashboardPage() {
   const [saving, setSaving] = useState(false);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [posts, setPosts] = useState<PostItem[]>([]);
-  const [username, setUsername] = useState<string | null>(null);
+  const [username] = useState<string | null>(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    return getStoredUsername();
+  });
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
 
-  useEffect(() => {
-    const token = getStoredSessionToken();
-
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
-
-    setUsername(getStoredUsername());
-    void loadPosts();
-  }, [router]);
-
-  const loadPosts = async () => {
+  async function loadPosts() {
     setLoadingPosts(true);
     const result = await listPosts();
 
@@ -44,7 +37,19 @@ export default function DashboardPage() {
 
     setPosts(result.posts);
     setLoadingPosts(false);
-  };
+  }
+
+  useEffect(() => {
+    const token = getStoredSessionToken();
+
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadPosts();
+  }, [router]);
 
   const handleCreatePost = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -39,7 +39,23 @@ Variables requeridas en `.env.local`:
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key
+SUPABASE_SERVICE_ROLE_KEY=tu_service_role_key
 ```
+
+## Integracion API + Front
+
+Ahora el frontend no consulta Supabase directamente para auth/posts. El flujo es:
+
+- Frontend (`src/lib/auth.ts`, `src/lib/posts.ts`) -> `fetch` a rutas `src/app/api/**`
+- API de Next.js (`route.ts`) -> llamadas RPC/Storage en Supabase via `src/lib/supabase-server.ts`
+
+Endpoints internos implementados:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/posts`
+- `POST /api/posts`
 
 ## Estructura del proyecto
 

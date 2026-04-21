@@ -2,56 +2,20 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import { AuthCard } from "@/components/AuthCard";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/TextField";
-import { registerWithUsername } from "@/infrastructure/services/auth.service";
+import { useAuth } from "@/application/useAuth";
 
 export default function RegisterPage() {
-  const router = useRouter();
+  const { register, error, loading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-
-    const trimmed = username.trim();
-
-    if (trimmed.length < 3) {
-      setError("El nombre debe tener al menos 3 caracteres.");
-      return;
-    }
-
-    if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
-      setError("Usa solo letras, numeros y guion bajo (_). ");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
-    setLoading(true);
-    const result = await registerWithUsername(trimmed, password);
-
-    if (!result.ok) {
-      setError(result.message ?? "No se pudo crear la cuenta.");
-      setLoading(false);
-      return;
-    }
-
-    router.push("/login");
+    await register(username, password, confirmPassword);
   };
 
   return (

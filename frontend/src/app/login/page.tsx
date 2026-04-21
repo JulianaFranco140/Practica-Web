@@ -2,39 +2,19 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import { AuthCard } from "@/components/AuthCard";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/TextField";
-import { loginWithUsername } from "@/infrastructure/services/auth.service";
+import { useAuth } from "@/application/useAuth";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const { login, error, loading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-
-    if (username.trim().length < 3) {
-      setError("El nombre debe tener al menos 3 caracteres.");
-      return;
-    }
-
-    setLoading(true);
-
-    const result = await loginWithUsername(username, password);
-
-    if (!result.ok) {
-      setError(result.message ?? "Credenciales invalidas");
-      setLoading(false);
-      return;
-    }
-
-    router.push("/dashboard");
+    await login(username, password);
   };
 
   return (

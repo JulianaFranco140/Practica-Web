@@ -2,42 +2,24 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getStoredSessionToken, getStoredUsername, logoutCustomSession } from "@/infrastructure/services/auth.service";
-import { createPost, listPosts, PostItem } from "@/infrastructure/services/post.service";
+import { useAuth } from "@/application/useAuth";
+import { usePosts } from "@/application/usePosts";
+import { getStoredSessionToken } from "@/infrastructure/services/auth.service";
+import { PostItem } from "@/domain/Post";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { getUsername, logout } = useAuth();
+  const { posts, loadingPosts, saving, error, loadPosts, addPost } = usePosts();
+
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Productividad");
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [loadingPosts, setLoadingPosts] = useState(true);
-  const [posts, setPosts] = useState<PostItem[]>([]);
-  const [username] = useState<string | null>(() => {
-    if (typeof window === "undefined") {
-      return null;
-    }
 
-    return getStoredUsername();
-  });
+  const [username] = useState<string | null>(getUsername);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
-
-  async function loadPosts() {
-    setLoadingPosts(true);
-    const result = await listPosts();
-
-    if (!result.ok) {
-      setError(result.message ?? "No se pudieron cargar las publicaciones");
-      setLoadingPosts(false);
-      return;
-    }
-
-    setPosts(result.posts);
-    setLoadingPosts(false);
-  }
 
   useEffect(() => {
     const token = getStoredSessionToken();
@@ -53,43 +35,19 @@ export default function DashboardPage() {
 
   const handleCreatePost = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
 
-    if (title.trim().length < 3) {
-      setError("El titulo debe tener al menos 3 caracteres.");
-      return;
+    const success = await addPost(title, category, content, imageFile);
+
+    if (success) {
+      setTitle("");
+      setCategory("Productividad");
+      setContent("");
+      setImageFile(null);
     }
-
-    if (content.trim().length < 10) {
-      setError("El contenido debe tener al menos 10 caracteres.");
-      return;
-    }
-
-    setSaving(true);
-    const result = await createPost({
-      title,
-      category,
-      content,
-      imageFile,
-    });
-
-    if (!result.ok) {
-      setError(result.message ?? "No se pudo crear la publicacion");
-      setSaving(false);
-      return;
-    }
-
-    setTitle("");
-    setCategory("Productividad");
-    setContent("");
-    setImageFile(null);
-    await loadPosts();
-    setSaving(false);
   };
 
   const handleLogout = async () => {
-    await logoutCustomSession();
-    router.replace("/login");
+    await logout();
   };
 
   return (

@@ -2,9 +2,11 @@ const SESSION_KEY = "blog_session_token";
 const USER_ID_KEY = "blog_user_id";
 const USERNAME_KEY = "blog_username";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+
 export async function registerWithUsername(username: string, password: string) {
   const trimmed = username.trim();
-  const response = await fetch("/api/auth/register", {
+  const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,7 +33,7 @@ export async function registerWithUsername(username: string, password: string) {
 export async function loginWithUsername(username: string, password: string) {
   const trimmed = username.trim();
 
-  const response = await fetch("/api/auth/login", {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -66,7 +68,7 @@ export async function logoutCustomSession() {
   const token = localStorage.getItem(SESSION_KEY);
 
   if (token) {
-    await fetch("/api/auth/logout", {
+    await fetch(`${API_URL}/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

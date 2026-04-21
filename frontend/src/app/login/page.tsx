@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { AuthCard } from "@/components/AuthCard";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/TextField";
-import { loginWithUsername } from "@/lib/auth";
+import { loginWithUsername } from "@/infrastructure/services/auth.service";
 
 export default function LoginPage() {
   const router = useRouter();

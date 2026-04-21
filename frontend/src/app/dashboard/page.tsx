@@ -2,8 +2,8 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getStoredSessionToken, getStoredUsername, logoutCustomSession } from "@/lib/auth";
-import { createPost, listPosts, PostItem } from "@/lib/posts";
+import { getStoredSessionToken, getStoredUsername, logoutCustomSession } from "@/infrastructure/services/auth.service";
+import { createPost, listPosts, PostItem } from "@/infrastructure/services/post.service";
 
 export default function DashboardPage() {
   const router = useRouter();

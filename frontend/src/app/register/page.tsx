@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { AuthCard } from "@/components/AuthCard";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/TextField";
-import { registerWithUsername } from "@/lib/auth";
+import { registerWithUsername } from "@/infrastructure/services/auth.service";
 
 export default function RegisterPage() {
   const router = useRouter();

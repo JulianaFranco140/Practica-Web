@@ -1,20 +1,13 @@
-import { getStoredSessionToken, getStoredUserId } from "./auth";
+import { getStoredSessionToken, getStoredUserId } from "./auth.service";
+import { PostItem } from "../../domain/Post";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 type CreatePostParams = {
   title: string;
   category: string;
   content: string;
   imageFile?: File | null;
-};
-
-export type PostItem = {
-  id: string;
-  title: string;
-  category: string;
-  content: string;
-  image_url: string | null;
-  username: string;
-  created_at: string;
 };
 
 export async function createPost({
@@ -41,7 +34,7 @@ export async function createPost({
     formData.append("imageFile", imageFile);
   }
 
-  const response = await fetch("/api/posts", {
+  const response = await fetch(`${API_URL}/posts`, {
     method: "POST",
     body: formData,
   });
@@ -66,7 +59,7 @@ export async function listPosts() {
     return { ok: false, message: "Sesion invalida", posts: [] as PostItem[] };
   }
 
-  const response = await fetch("/api/posts", {
+  const response = await fetch(`${API_URL}/posts`, {
     method: "GET",
     headers: {
       "x-session-token": token,

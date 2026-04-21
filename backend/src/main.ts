@@ -12,6 +12,8 @@ import { UpdateUser } from "./application/use-cases/UpdateUser";
 import { InMemoryUserRepository } from "./infrastructure/persistence/InMemoryUserRepository";
 import { UserController } from "./interfaces/controllers/UserController";
 import { createUserRoutes } from "./interfaces/routers/user.router";
+import { createAuthRoutes } from "./interfaces/routers/auth.router";
+import { createPostRoutes } from "./interfaces/routers/post.router";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -35,7 +37,12 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+// Original users API endpoints
 app.use(createUserRoutes(userController));
+
+// Migrated Blog API endpoints from Next.js
+app.use("/api", createAuthRoutes());
+app.use("/api", createPostRoutes());
 
 // Start server
 app.listen(PORT, () => {

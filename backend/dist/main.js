@@ -15,6 +15,8 @@ const UpdateUser_1 = require("./application/use-cases/UpdateUser");
 const InMemoryUserRepository_1 = require("./infrastructure/persistence/InMemoryUserRepository");
 const UserController_1 = require("./interfaces/controllers/UserController");
 const user_router_1 = require("./interfaces/routers/user.router");
+const auth_router_1 = require("./interfaces/routers/auth.router");
+const post_router_1 = require("./interfaces/routers/post.router");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 // Middlewares
@@ -27,7 +29,11 @@ const userController = new UserController_1.UserController(new GetUsers_1.GetUse
 app.get("/health", (_req, res) => {
     res.status(200).json({ status: "ok" });
 });
+// Original users API endpoints
 app.use((0, user_router_1.createUserRoutes)(userController));
+// Migrated Blog API endpoints from Next.js
+app.use("/api", (0, auth_router_1.createAuthRoutes)());
+app.use("/api", (0, post_router_1.createPostRoutes)());
 // Start server
 app.listen(PORT, () => {
     console.log(`Backend running on http://localhost:${PORT}`);
